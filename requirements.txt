@@ -1,0 +1,5 @@
+streamlit
+langchain_openai
+pypdf
+pandas==2.0
+langchain
