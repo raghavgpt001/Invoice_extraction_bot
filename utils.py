@@ -20,7 +20,6 @@ def extracted_data(pages_data, api_key):
 
     template = """Extract all the following values : invoice no., Description, Quantity, date, 
         Unit price , Amount, Total, email, phone number and address from this data: {pages}
-
         Expected output: remove any currency symbols {{'Invoice no.': '1001329','Description': 'Office Chair','Quantity': '2','Date': '5/4/2023','Unit price': '1100.00','Amount': '2200.00','Total': '2200.00','Email': 'Santoshvarma0988@gmail.com','Phone number': '9999999999','Address': 'Mumbai, India'}}
         """
     prompt_template = PromptTemplate(input_variables=["pages"], template=template)
@@ -34,21 +33,9 @@ def extracted_data(pages_data, api_key):
 # iterate over files in
 # that user uploaded PDF files, one by one
 def create_docs(user_pdf_list, api_key):
-    
-    df = pd.DataFrame({'Invoice no.': pd.Series(dtype='str'),
-                   'Description': pd.Series(dtype='str'),
-                   'Quantity': pd.Series(dtype='str'),
-                   'Date': pd.Series(dtype='str'),
-	                'Unit price': pd.Series(dtype='str'),
-                   'Amount': pd.Series(dtype='int'),
-                   'Total': pd.Series(dtype='str'),
-                   'Email': pd.Series(dtype='str'),
-	                'Phone number': pd.Series(dtype='str'),
-                   'Address': pd.Series(dtype='str')
-                    })
+    data = []
 
     for filename in user_pdf_list:
-        
         print("filename: ", filename)
         raw_data=get_pdf_text(filename)
         print("raw_data: ", raw_data)
@@ -66,12 +53,13 @@ def create_docs(user_pdf_list, api_key):
             print("extracted_text: ", extracted_text)
             # Converting the extracted text to a dictionary
             data_dict = eval('{' + extracted_text + '}')
-            print("data_dict" ,data_dict)
-            df=df.concat([data_dict], ignore_index=True)
+            print("data_dict: " , data_dict)
+            data.append(data_dict)
             print("********************DONE***************")
         else:
             print("No match found.")
 
+    df = pd.DataFrame.from_dict(data) 
 
     df.head()
     return df
